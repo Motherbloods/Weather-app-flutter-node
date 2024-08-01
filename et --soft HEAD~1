@@ -1,0 +1,13 @@
+[33mcommit 51943eed8f7d9060047c5a3caf6376a110c9c0a6[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: Motherbloods <habibskh06@gmail.com>
+Date:   Thu Aug 1 11:07:12 2024 +0700
+
+    Add Weather App Screen, Firebase, Backend
+    
+    Signed-off-by: Motherbloods <habibskh06@gmail.com>
+
+[33mcommit abbe37689dc484cf1b6a82221d520dd35324d85d[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: Motherbloods <habibskh06@gmail.com>
+Date:   Wed Jul 31 09:09:19 2024 +0700
+
+    first commit

@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/weather_card.dart';
+import '../services/api_service.dart';
 
 class HomeScreen extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
+  final ApiService apiService = ApiService();
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +18,10 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.notifications),
             onPressed: () => Get.to(() => NotificationScreen()),
+          ),
+          IconButton(
+            icon: Icon(Icons.warning),
+            onPressed: () => _simulateExtremeWeather(),
           ),
           IconButton(
             icon: Icon(Icons.exit_to_app),
@@ -38,5 +44,18 @@ class HomeScreen extends StatelessWidget {
         );
       }),
     );
+  }
+
+  void _simulateExtremeWeather() async {
+    final user = authController.user.value;
+    if (user != null && user.locations.isNotEmpty) {
+      final location = user.locations.first.split(',');
+      await apiService.simulateExtremeWeather(
+        user.id,
+        location[0],
+        location[1],
+        ['extreme heat', 'heavy rain'],
+      );
+    }
   }
 }

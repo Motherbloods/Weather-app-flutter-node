@@ -15,6 +15,9 @@ class NotificationService {
       FirebaseMessaging.instance;
 
   static Future<void> initialize() async {
+    // Minta izin notifikasi
+    await requestPermissions();
+
     // Initialize local notifications plugin
     const InitializationSettings initializationSettings =
         InitializationSettings(
@@ -54,8 +57,61 @@ class NotificationService {
     });
   }
 
+  static Future<void> requestPermissions() async {
+    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    print('User granted permission: ${settings.authorizationStatus}');
+  }
+
+  // static Future<void> display(RemoteMessage message) async {
+  //   try {
+  //     final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  //     final NotificationDetails notificationDetails = NotificationDetails(
+  //       android: AndroidNotificationDetails(
+  //         'weatherapp',
+  //         'weatherapp channel',
+  //         importance: Importance.max,
+  //         priority: Priority.high,
+  //         playSound: true,
+  //       ),
+  //     );
+
+  //     await _notificationsPlugin.show(
+  //       id,
+  //       message.notification?.title,
+  //       message.notification?.body,
+  //       notificationDetails,
+  //       payload: message.data["route"],
+  //     );
+  //   } catch (e) {
+  //     print('Error displaying notification: $e');
+  //   }
+  // }
+
   static Future<void> display(RemoteMessage message) async {
     try {
+      // Periksa status izin terlebih dahulu
+      NotificationSettings settings =
+          await _firebaseMessaging.getNotificationSettings();
+      if (settings.authorizationStatus != AuthorizationStatus.authorized) {
+        print('Notifications are not authorized. Requesting permission...');
+        await requestPermissions();
+        // Periksa lagi setelah meminta izin
+        settings = await _firebaseMessaging.getNotificationSettings();
+        if (settings.authorizationStatus != AuthorizationStatus.authorized) {
+          print('User declined notification permission');
+          return; // Jangan tampilkan notifikasi jika izin ditolak
+        }
+      }
+
       final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
       final NotificationDetails notificationDetails = NotificationDetails(
         android: AndroidNotificationDetails(
@@ -65,6 +121,7 @@ class NotificationService {
           priority: Priority.high,
           playSound: true,
         ),
+        iOS: DarwinNotificationDetails(), // Tambahkan ini untuk iOS
       );
 
       await _notificationsPlugin.show(

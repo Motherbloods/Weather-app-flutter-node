@@ -10,18 +10,24 @@ import './services/notification_service.dart';
 import './controllers/auth_controller.dart';
 import './controllers/notification_controller.dart';
 import 'firebase_options.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  final notificationController = Get.find<NotificationController>();
-  notificationController.addNotification(AppNotification(
+  final notificationController =
+      Get.put(NotificationController()); // Ensure controller is initialized
+
+  AppNotification newNotification = AppNotification(
     id: message.messageId ?? DateTime.now().toString(),
     title: message.notification?.title ?? 'Weather Alert',
     body: message.notification?.body ?? 'New weather update',
     timestamp: DateTime.now(),
     data: message.data,
-  ));
+  );
+
+  notificationController.addNotification(newNotification);
+  print('Added new notification: ${newNotification.title}');
 }
 
 void main() async {
@@ -33,6 +39,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  await requestNotificationPermissions();
   // Set the background message handler before calling other Firebase services
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -46,8 +53,54 @@ void main() async {
       NotificationService.display(message);
     }
   });
+  Get.put(NotificationController());
 
   runApp(MyApp());
+}
+
+Future<void> requestNotificationPermissions() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    print('User granted permission');
+  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    print('User granted provisional permission');
+  } else {
+    print('User declined or has not accepted permission');
+    // Tampilkan dialog yang menjelaskan pentingnya izin
+    Get.dialog(
+      AlertDialog(
+        title: Text('Izin Notifikasi Diperlukan'),
+        content: Text(
+            'Notifikasi diperlukan untuk memberitahu Anda tentang perubahan cuaca penting. Tanpa izin ini, Anda mungkin melewatkan informasi penting.'),
+        actions: [
+          TextButton(
+            child: Text('Buka Pengaturan'),
+            onPressed: () {
+              // Buka pengaturan aplikasi
+              openAppSettings();
+            },
+          ),
+          TextButton(
+            child: Text('Nanti'),
+            onPressed: () {
+              Get.back();
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {

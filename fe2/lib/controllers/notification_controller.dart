@@ -15,6 +15,7 @@ class NotificationController extends GetxController {
   void addNotification(AppNotification notification) {
     notifications.insert(0, notification);
     saveNotifications();
+    update();
   }
 
   void markAsRead(String id) {

@@ -45,15 +45,27 @@ void main() async {
 
   await NotificationService.initialize();
 
+  final notificationController = Get.put(NotificationController());
+
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print('Got a message whilst in the foreground!');
     print('Message data: ${message.data}');
     if (message.notification != null) {
       print('Message also contained a notification: ${message.notification}');
       NotificationService.display(message);
+
+      // Add notification to NotificationController
+      AppNotification newNotification = AppNotification(
+        id: message.messageId ?? DateTime.now().toString(),
+        title: message.notification?.title ?? 'Weather Alert',
+        body: message.notification?.body ?? 'New weather update',
+        timestamp: DateTime.now(),
+        data: message.data,
+      );
+      notificationController.addNotification(newNotification);
+      print('Added new notification in foreground: ${newNotification.title}');
     }
   });
-  Get.put(NotificationController());
 
   runApp(MyApp());
 }

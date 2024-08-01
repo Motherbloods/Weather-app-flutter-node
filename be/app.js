@@ -28,7 +28,6 @@ async function runWeatherCronJob() {
         }
 
         const weatherData = await fetchWeatherData(lat, lon);
-        console.log("brooo ini wehater data", weatherData);
         if (weatherData) {
           console.log(`Weather data fetched for location: ${lat}, ${lon}`);
 

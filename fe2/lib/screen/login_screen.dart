@@ -249,13 +249,16 @@ class LoginScreen extends StatelessWidget {
               onPressed: () async {
                 String? fcmToken = await _getFcmToken();
                 String? location = await _getCurrentLocation();
+
                 if (location != null) {
+                  print("Calling login method");
                   authController.login(
                     emailController.text,
                     [location],
                     {'daily': true, 'extreme': true},
                     fcmToken ?? '',
                   );
+                  print("Login method completed");
                 } else {
                   Get.snackbar('Error',
                       'Unable to get location. Please check your settings and try again.');

@@ -24,7 +24,6 @@ class ApiService {
         'fcmToken': fcmToken,
       }),
     );
-    print('baseUrl ${response.body}');
 
     if (response.statusCode == 201) {
       return User.fromJson(json.decode(response.body));
@@ -36,7 +35,7 @@ class ApiService {
   Future<Weather> getWeatherData(String lat, String lon) async {
     final response =
         await http.get(Uri.parse('${baseUrl}api/weather?lat=$lat&lon=$lon'));
-    print(response.body);
+    print('ini get wesatheaesrasere');
     if (response.statusCode == 200) {
       return Weather.fromJson(json.decode(response.body));
     } else {
@@ -90,7 +89,6 @@ class ApiService {
           'conditions': conditions,
         }),
       );
-      print(response.body);
 
       if (response.statusCode == 200) {
         print('Extreme weather simulation triggered successfully');

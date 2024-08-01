@@ -3,6 +3,7 @@ const User = require("../models/user");
 const login = async (req, res) => {
   try {
     const { email, locations, notificationPreferences, fcmToken } = req.body;
+    console.log("ini login", req.body);
     const user = new User({
       email,
       locations,

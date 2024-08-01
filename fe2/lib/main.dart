@@ -126,13 +126,19 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Obx(() {
-        if (authController.user.value != null) {
-          return HomeScreen();
-        } else {
-          return LoginScreen();
-        }
-      }),
+      home: GetX<AuthController>(
+        init: AuthController(),
+        builder: (controller) {
+          print("Building MyApp, user state: ${controller.user.value}");
+          if (controller.user.value != null) {
+            print('Navigating to HomeScreen');
+            return HomeScreen();
+          } else {
+            print('Navigating to LoginScreen');
+            return LoginScreen();
+          }
+        },
+      ),
     );
   }
 }

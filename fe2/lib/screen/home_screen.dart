@@ -88,7 +88,6 @@ class HomeScreen extends StatelessWidget {
         return ListView.builder(
           itemCount: authController.user.value!.locations.length,
           itemBuilder: (context, index) {
-            print(authController.user.value!.locations.length);
             return WeatherCard(
                 location: authController.user.value!.locations[index]);
           },
